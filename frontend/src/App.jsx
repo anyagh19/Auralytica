@@ -5,6 +5,11 @@ import ProtectedRoutes from './components/ProtectedRoutes'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
+import Services from '../modules/common/components/Services'
+import About from '../modules/common/components/About'
+import Contact from '../modules/common/components/Contact'
+import Dashboard from '../modules/user/components/Dashboard'
+import Inventory from '../modules/user/components/Inventory'
 
 function LogOut() {
   localStorage.clear()
@@ -20,30 +25,59 @@ function App() {
 
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path='/'
-          element={
-            <ProtectedRoutes>
-              <Home />
-            </ProtectedRoutes>
-          }
-        />
-        <Route 
+
+    <Routes>
+      <Route
+        path='/'
+        element={
+
+          <Home />
+
+        }
+      />
+      <Route
         path='/login'
         element={<Login />}
-        />
-        <Route 
+      />
+      <Route
         path='/register'
         element={<Resigter />}
-        />
-        <Route 
+      />
+      <Route
+        path='/services'
+        element={<Services />}
+      />
+      <Route
+        path='/about'
+        element={<About />}
+      />
+      <Route
+        path='/contact'
+        element={<Contact />}
+      />
+      <Route
+        path='/dashboard'
+        element={
+          <ProtectedRoutes>
+            <Dashboard />
+          </ProtectedRoutes>
+
+        }
+      />
+      <Route
+        path='/inventory'
+        element={
+          <ProtectedRoutes>
+            <Inventory />
+          </ProtectedRoutes>
+
+        }
+      />
+      <Route
         path='*'
         element={<NotFound />}
-        />
-      </Routes>
-    </BrowserRouter>
+      />
+    </Routes>
   )
 }
 

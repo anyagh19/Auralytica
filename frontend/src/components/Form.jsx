@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import api from '../api'
 import { useNavigate } from 'react-router-dom'
 import { ACCESS_TOKEN , REFRESH_TOKEN } from '../constants'
+import { Link } from 'react-router-dom'
 
 function Form({ route, method }) {
     const [username, setUsername] = useState('')
@@ -20,7 +21,7 @@ function Form({ route, method }) {
             if (method === "login") {
                 localStorage.setItem(ACCESS_TOKEN, res.data.access);
                 localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/")
+                navigate("/dashboard")
             } else {
                 navigate("/login")
             }
@@ -54,6 +55,7 @@ function Form({ route, method }) {
                 <button className="form-button px-4 py-2 bg-red-200 rounded-full text-md font-medium" type="submit">
                     {name}
                 </button>
+                {method === "login" ? <><Link to="/register" className="text-blue-500">Don't have an account? Register</Link></> : <><Link to="/login" className="text-blue-500">Already have an account? Login</Link></>}
             </form>
         </div>
     )
