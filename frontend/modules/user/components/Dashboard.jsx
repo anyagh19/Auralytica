@@ -18,6 +18,12 @@ const Dashboard = () => {
       <div className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">📊 Sales Dashboard</h1>
         <button
+          onClick={() => navigate("/prediction")}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          Prediction
+        </button>
+        <button
           onClick={() => navigate("/inventory")}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >

@@ -10,6 +10,7 @@ import About from '../modules/common/components/About'
 import Contact from '../modules/common/components/Contact'
 import Dashboard from '../modules/user/components/Dashboard'
 import Inventory from '../modules/user/components/Inventory'
+import SalesPredictionApp from '../modules/inventory/components/Prediction'
 
 function LogOut() {
   localStorage.clear()
@@ -69,6 +70,15 @@ function App() {
         element={
           <ProtectedRoutes>
             <Inventory />
+          </ProtectedRoutes>
+
+        }
+      />
+      <Route
+        path='/prediction'
+        element={
+          <ProtectedRoutes>
+            <SalesPredictionApp />
           </ProtectedRoutes>
 
         }

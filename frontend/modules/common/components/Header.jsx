@@ -28,6 +28,8 @@ const handleLogout = async () => {
           <Link to={"/services"} className="hover:text-blue-600 transition">Services</Link>
           <Link to={"/about"} className="hover:text-blue-600 transition">About</Link>
           <Link to={"/contact"} className="hover:text-blue-600 transition">Contact</Link>
+          {isLoggedIn ? <Link to={"/dashboard"} className="   hover:text-red-600 transition" >Dashboard</Link> : <></>}
+          
           {isLoggedIn ? <Link to={"/"} className="bg-red-400 text-white px-4 py-2 rounded-lg hover:text-red-600 transition" onClick={handleLogout}>Log Out</Link> : <Link to={"/login"} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Login</Link>}
           
         </nav>
