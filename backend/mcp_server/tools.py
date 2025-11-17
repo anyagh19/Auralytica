@@ -2,9 +2,15 @@ from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
 from google import genai
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 
 # Correct API key usage
-client = genai.Client(api_key="AIzaSyAlpgZPdClEiR1SWMom0p6JX5zVP5XavTc")
+client = genai.Client(api_key=GOOGLE_API_KEY)
 
 mcp = FastMCP()
 
