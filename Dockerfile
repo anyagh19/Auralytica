@@ -18,4 +18,4 @@ USER appuser
 EXPOSE 8000
 
 # Let's use the DJANGO_SETTINGS_MODULE to be explicit
-CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=backend.settings && gunicorn backend.wsgi:application --workers 4 --bind 0.0.0.0:8000"]
+CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=backend.settings && gunicorn backend.backend.wsgi:application --workers 4 --bind 0.0.0.0:8000"]
