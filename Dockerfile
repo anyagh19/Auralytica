@@ -2,20 +2,20 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
+# Copy requirement file
 COPY requirements.txt .
+
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy backend folder
+COPY backend/ /app/backend/
 
-RUN useradd -m -u 1000 appuser && chown -R appuser /app
-USER appuser
+# Set working directory to backend
+WORKDIR /app/backend
 
+# Expose port
 EXPOSE 8000
 
-# Let's use the DJANGO_SETTINGS_MODULE to be explicit
-CMD ["sh", "-c", "export DJANGO_SETTINGS_MODULE=backend.settings && gunicorn backend.backend.wsgi:application --workers 4 --bind 0.0.0.0:8000"]
+# Start Django using Gunicorn
+CMD ["gunicorn", "backend.wsgi:application", "--bind", "0.0.0.0:8000"]
