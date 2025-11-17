@@ -20,4 +20,4 @@ USER appuser
 EXPOSE 8000
 
 # Production
-CMD ["gunicorn", "your_project.wsgi:application", "--workers", "4", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "backend.wsgi:application", "--workers", "4", "--bind", "0.0.0.0:8000"]
