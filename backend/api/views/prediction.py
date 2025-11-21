@@ -4,52 +4,19 @@ from django.contrib.auth.models import User
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer, NoteSerializer
+from ..serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Note
+
 import pandas as pd
 import json
 import numpy as np
 from mcp_server.tools import get_encoding_plan, do_encoding
 from asgiref.sync import async_to_sync
-from .ml_model import SalesPredictionModel
-from .sales_analytics import SalesAnalytics
+from ..ml_model import SalesPredictionModel
+from ..sales_analytics import SalesAnalytics
 import os
 from django.conf import settings
 
-
-class CreateUserView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [AllowAny]
-
-
-def none(response):
-    return HttpResponse("hello any")
-
-
-class NoteListCreate(generics.ListCreateAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
-
-    def perform_create(self, serializer):
-        if serializer.is_valid():
-            serializer.save(author=self.request.user)
-        else:
-            print(serializer.errors)
-
-
-class NoteDelete(generics.DestroyAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        user = self.request.user
-        return Note.objects.filter(author=user)
 
 
 class GetPredictionFromUploadedFile(APIView):

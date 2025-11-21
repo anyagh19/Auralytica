@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Note
+from .models import Inventory
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,10 +12,29 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         return user
 
-class NoteSerializer(serializers.ModelSerializer):
+class InventorySerializer(serializers.ModelSerializer):
     class Meta:
-        model= Note
-        fields= ['id' , 'title' , 'content' , 'created_at' , 'author']
+        model= Inventory
+        fields= ['id' , 'product_name' , 'brand_name' ,'category', 'quantity' ,'price',  'created_at' , 'author']
         extra_kwargs = {"author" : {"read_only": True}}
 
-    
+class CreateInventoryProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Inventory    
+        fields=[  'product_name' , 'brand_name' ,'category', 'quantity' , 'price', ]
+
+    def create(self, validated_data):
+        # Automatically set the author to the logged-in user
+        request = self.context.get('request')
+        validated_data['author'] = request.user
+        return super().create(validated_data)
+
+    def validate_quantity(self, value):
+        if value < 0:
+            raise serializers.ValidationError("Quantity cannot be negative.")
+        return value
+
+    def validate_price(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Price must be greater than 0.")
+        return value
