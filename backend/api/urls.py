@@ -1,15 +1,17 @@
 # urls.py
 from django.urls import path
-from . import views
+from .views.prediction import  GetPredictionFromUploadedFile, TrainModel, MakePrediction, GetModelInfo
+from .views.inventory import CreateInventoryProductView , ListInventoryProductsView
 
 urlpatterns = [
     # Existing endpoints
-    path('notes/', views.NoteListCreate.as_view(), name='note-list'),
-    path('notes/delete/<int:pk>/', views.NoteDelete.as_view(), name='delete-note'),
+    
     
     # ML endpoints
-    path('get-encoding-plan/', views.GetPredictionFromUploadedFile.as_view(), name='get-encoding-plan'),
-    path('train-model/', views.TrainModel.as_view(), name='train-model'),
-    path('predict/', views.MakePrediction.as_view(), name='make-prediction'),
-    path('model-info/', views.GetModelInfo.as_view(), name='model-info'),
+    path('get-encoding-plan/', GetPredictionFromUploadedFile.as_view(), name='get-encoding-plan'),
+    path('train-model/', TrainModel.as_view(), name='train-model'),
+    path('predict/', MakePrediction.as_view(), name='make-prediction'),
+    path('model-info/', GetModelInfo.as_view(), name='model-info'),
+    path('create-inventory-product/', CreateInventoryProductView.as_view() , name='create-inventory-product' ),
+    path('list-inventory-product/' , ListInventoryProductsView.as_view() , name='list-inventory-product')
 ]
