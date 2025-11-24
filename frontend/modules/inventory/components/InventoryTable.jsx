@@ -11,10 +11,10 @@ const InventoryTable = () => {
     // Example static data — replace with data from your Django API
 
 
-    // Filter logic
-    // const filteredInventory = inventoryData.filter((item) =>
-    //     item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
+    //Filter logic
+    const filteredInventory = products.filter((item) =>
+        item.product_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     // Status color helper
     const getStatusColor = (status) => {
@@ -62,7 +62,7 @@ const InventoryTable = () => {
         const fetchProducts = async () => {
             try {
             const res = await api.get('list-inventory-product/')
-            console.log(res.data)
+            // console.log(res.data)
             setProducts(res.data)
         } catch (error) {
             console.log(error)
@@ -117,8 +117,8 @@ const InventoryTable = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {products.length > 0 ? (
-                            products.map((item) => (
+                        {filteredInventory.length > 0 ? (
+                            filteredInventory.map((item) => (
                                 <tr key={item.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4">{item.id}</td>
                                     <td className="px-6 py-4 font-medium text-gray-800">{item.category}</td>
