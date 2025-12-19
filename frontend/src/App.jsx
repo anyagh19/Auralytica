@@ -12,6 +12,7 @@ import Dashboard from '../modules/user/components/Dashboard'
 import Inventory from '../modules/user/components/Inventory'
 import SalesPredictionApp from '../modules/inventory/components/Prediction'
 import InventoryTable from '../modules/inventory/components/InventoryTable'
+import SalesTable from '../modules/sales/components/SalesTable'
 
 function LogOut() {
   localStorage.clear()
@@ -80,6 +81,15 @@ function App() {
         element={
           <ProtectedRoutes>
             <SalesPredictionApp />
+          </ProtectedRoutes>
+
+        }
+      />
+      <Route
+        path='/sales'
+        element={
+          <ProtectedRoutes>
+            <SalesTable />
           </ProtectedRoutes>
 
         }

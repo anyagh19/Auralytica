@@ -45,3 +45,8 @@ class ListInventoryProductsView(generics.ListAPIView):
     queryset = Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [IsAuthenticated]
+
+class DeleteInventoryProductView(generics.DestroyAPIView):
+    queryset= Inventory.objects.all()
+    serializer_class = InventorySerializer
+    permission_classes = [IsAuthenticated]

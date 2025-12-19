@@ -24,6 +24,12 @@ const Dashboard = () => {
           Prediction
         </button>
         <button
+          onClick={() => navigate("/sales")}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          Sales
+        </button>
+        <button
           onClick={() => navigate("/inventory")}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >

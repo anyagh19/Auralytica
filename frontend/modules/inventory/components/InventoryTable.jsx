@@ -1,12 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Dialog from "../../common/ui/Dialog";
 import CreateProductForm from "../ui/CreateProductForm";
+import DeleteProductForm from "../ui/DeleteProductForm";
 import api from "../../../src/api";
+import { EllipsisVertical } from 'lucide-react';
+
 
 const InventoryTable = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [openCreateDialog, setOpenCreateDialog] = useState(false)
-    const [products , setProducts] = useState([])
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
+    const [selectedProductId, setSelectedProductId] = useState(null);
+    const [products, setProducts] = useState([])
 
     // Example static data — replace with data from your Django API
 
@@ -16,23 +21,15 @@ const InventoryTable = () => {
         item.product_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Status color helper
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "In Stock":
-                return "text-green-600 bg-green-50";
-            case "Low Stock":
-                return "text-yellow-600 bg-yellow-50";
-            case "Out of Stock":
-                return "text-red-600 bg-red-50";
-            default:
-                return "text-gray-600 bg-gray-50";
-        }
-    };
 
     const handleOpenCreateProduct = () => {
         setOpenCreateDialog(true)
     }
+    const handleOpenDeleteProduct = (id) => {
+        setSelectedProductId(id);
+        setOpenDeleteDialog(true);
+    };
+
     const handleCreateProduct = async (data) => {
         try {
             const res = await api.post(
@@ -58,18 +55,35 @@ const InventoryTable = () => {
         }
     };
 
+    const handleDeleteProduct = async () => {
+        try {
+            await api.delete(`delete-inventory-product/${selectedProductId}/`);
+
+            // Update UI without refetch
+            setProducts(prev =>
+                prev.filter(item => item.id !== selectedProductId)
+            );
+
+            setOpenDeleteDialog(false);
+            setSelectedProductId(null);
+        } catch (error) {
+            console.error("Delete failed", error);
+        }
+    };
+
+
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-            const res = await api.get('list-inventory-product/')
-            // console.log(res.data)
-            setProducts(res.data)
-        } catch (error) {
-            console.log(error)
-        }
+                const res = await api.get('list-inventory-product/')
+                // console.log(res.data)
+                setProducts(res.data)
+            } catch (error) {
+                console.log(error)
+            }
         }
         fetchProducts()
-    } , [])
+    }, [])
 
     return (
         <div className="min-h-screen bg-gray-50 pt-24 px-6 md:px-12">
@@ -113,7 +127,7 @@ const InventoryTable = () => {
                             <th className="px-6 py-3 text-left font-semibold text-gray-700">Brand</th>
                             <th className="px-6 py-3 text-left font-semibold text-gray-700">Quantity</th>
                             <th className="px-6 py-3 text-left font-semibold text-gray-700">Price (₹)</th>
-                            <th className="px-6 py-3 text-left font-semibold text-gray-700">Status</th>
+                            <th className="px-6 py-3 text-left font-semibold text-gray-700">Amount</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100">
@@ -126,7 +140,7 @@ const InventoryTable = () => {
                                     <td className="px-6 py-4 font-medium text-gray-800">{item.brand_name}</td>
                                     <td className="px-6 py-4">{item.quantity}</td>
                                     <td className="px-6 py-4">₹{item.price.toLocaleString()}</td>
-                                    <td className="px-6 py-4">
+                                    {/* <td className="px-6 py-4">
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
                                                 item.status
@@ -134,6 +148,14 @@ const InventoryTable = () => {
                                         >
                                             {item.status}
                                         </span>
+                                    </td> */}
+                                    <td className="px-6 py-4">
+                                        Rs. {item.price * item.quantity}
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        <button onClick={() => handleOpenDeleteProduct(item.id)}>
+                                            <EllipsisVertical />
+                                        </button>
                                     </td>
                                 </tr>
                             ))
@@ -150,6 +172,20 @@ const InventoryTable = () => {
                     </tbody>
                 </table>
             </div>
+
+            {openDeleteDialog && (
+                <Dialog
+                    isOpen={openDeleteDialog}
+                    onClose={() => setOpenDeleteDialog(false)}
+                    title="Delete Product"
+                >
+                    <DeleteProductForm
+                        onSubmit={handleDeleteProduct}
+                        onCancel={() => setOpenDeleteDialog(false)}
+                    />
+                </Dialog>
+            )}
+
 
             {/* Footer Note */}
             <div className="text-center text-gray-500 mt-8">
