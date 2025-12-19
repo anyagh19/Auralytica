@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Inventory
+from .models import Inventory , Sales
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,3 +38,9 @@ class CreateInventoryProductSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError("Price must be greater than 0.")
         return value
+
+class SalesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= Sales
+        fields= ['id' , 'product_name' , 'brand_name' ,'category', 'quantity' ,'price',  'created_at' , 'author']
+        extra_kwargs = {"author" : {"read_only": True}}
