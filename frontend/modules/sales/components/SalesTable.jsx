@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import Dialog from "../../common/ui/Dialog";
 import api from "../../../src/api";
-import { EllipsisVertical } from 'lucide-react';
 import { AiTwotoneDelete } from "react-icons/ai"
 import CreateSalesProductForm from "../ui/CreateSalesProductForm";
+import DeleteProductForm from "../ui/DeleteProductForm";
+import { useDispatch, useSelector } from "react-redux";
+import { setSales , addItem , deleteItem } from "../../../redux/slices/totalSalesSlice";
+import { selectTotalAmount } from "../../../redux/slices/salesSelector";
 
 
 const SalesTable = () => {
@@ -12,6 +15,8 @@ const SalesTable = () => {
   const [openDeleteSalesDialog, setOpenDeleteSalesDialog] = useState(false)
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [products, setProducts] = useState([])
+
+
 
   // Example static data — replace with data from your Django API
 
@@ -34,8 +39,22 @@ const SalesTable = () => {
       const res = await api.post('create-sales-product/', data)
       console.log('add', res.data)
       setOpenCreateSalesDialog(false)
+       dispatch(addItem(res.data));
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  const handleDeleteProduct = async () => {
+    try {
+      await api.delete(`delete-sales-product/${selectedProductId}`)
+
+      setProducts(prev => prev.filter(item => item.id !== selectedProductId))
+      setOpenDeleteSalesDialog(false);
+      setSelectedProductId(null);
+      dispatch(deleteItem(selectedProductId));
+    } catch (error) {
+      console.log('er', error)
     }
   }
 
@@ -45,15 +64,24 @@ const SalesTable = () => {
         const res = await api.get('list-sales-product/')
         // console.log(res.data)
         const sortedData = res.data.sort(
-        (a, b) => new Date(b.created_at) - new Date(a.created_at)
-      )
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        )
         setProducts(sortedData)
+        dispatch(setSales(res.data));
       } catch (error) {
         console.log(error)
       }
     }
     fetchProducts()
   }, [])
+
+
+  const dispatch = useDispatch();
+  const totalAmount = useSelector(selectTotalAmount);
+  // const productss = useSelector(state => state.sales.items);
+
+
+
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 px-6 md:px-12">
@@ -87,6 +115,7 @@ const SalesTable = () => {
         </Dialog>
       )}
       {/* Table */}
+      <h1>ji{totalAmount}</h1>
       <div className="overflow-x-auto bg-white shadow-md rounded-xl border border-gray-100">
         <table className="min-w-full divide-y divide-gray-200 text-sm">
           <thead className="bg-gray-100">
@@ -115,6 +144,7 @@ const SalesTable = () => {
                   <td className="px-6 py-4">
                     Rs. {item.price * item.quantity}
                   </td>
+
                   <td className="px-6 py-4 font-medium text-gray-800">
                     {new Date(item.created_at).toLocaleDateString("en-IN", {
                       day: "2-digit",
@@ -147,7 +177,7 @@ const SalesTable = () => {
 
       {openDeleteSalesDialog && (
         <Dialog
-          isOpen={openDeleteDialog}
+          isOpen={openDeleteSalesDialog}
           onClose={() => setOpenDeleteSalesDialog(false)}
           title="Delete Product"
         >
