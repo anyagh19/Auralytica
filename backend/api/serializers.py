@@ -40,7 +40,8 @@ class CreateInventoryProductSerializer(serializers.ModelSerializer):
         return value
 
 class SalesSerializer(serializers.ModelSerializer):
+    product_id = serializers.IntegerField(write_only=True)
     class Meta:
         model= Sales
-        fields= ['id' , 'product_name' , 'brand_name' ,'category', 'quantity' ,'price',  'created_at' , 'author']
+        fields= ['id', 'product_id' , 'product_name' , 'brand_name' ,'category', 'quantity' ,'price',  'created_at' , 'author']
         extra_kwargs = {"author" : {"read_only": True}}

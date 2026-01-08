@@ -1,16 +1,20 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { selectTotalAmount } from "../../../redux/slices/salesSelector";
+import { useSelector } from "react-redux";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const totalAmount = useSelector(selectTotalAmount)
 
   // Example data (you can replace with API data)
   const stats = [
-    { label: "Total Sales", value: "$24,500", change: "+8%" },
+    { label: "Total Sales", value: totalAmount, change: "+8%" },
     { label: "Predicted Sales", value: "$27,300", change: "+11%" },
     { label: "Active Users", value: "1,245", change: "+5%" },
     { label: "Regions Covered", value: "12", change: "+2%" },
   ];
+
 
   return (
     <div className="min-h-screen bg-gray-50 pt-24 px-6 md:px-12">
@@ -45,7 +49,7 @@ const Dashboard = () => {
             className="bg-white rounded-xl shadow-md p-6 border border-gray-100"
           >
             <h2 className="text-gray-500 font-medium">{item.label}</h2>
-            <p className="text-2xl font-bold text-gray-800 mt-2">{item.value}</p>
+            <p className="text-2xl font-bold text-gray-800 mt-2">{totalAmount}</p>
             <p
               className={`mt-1 text-sm ${
                 item.change.startsWith("+") ? "text-green-600" : "text-red-600"

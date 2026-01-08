@@ -67,6 +67,8 @@ function CreateSalesProductForm({ onSubmit }) {
                             <th className="px-6 py-3 text-left">Product</th>
                             <th className="px-6 py-3 text-left">Brand</th>
                             <th className="px-6 py-3 text-left">Price (₹)</th>
+                            <th className="px-6 py-3 text-left">quantity</th>
+
                         </tr>
                     </thead>
                     <tbody className="divide-y">
@@ -83,6 +85,8 @@ function CreateSalesProductForm({ onSubmit }) {
                                     <td className="px-6 py-4 font-medium">{item.product_name}</td>
                                     <td className="px-6 py-4">{item.brand_name}</td>
                                     <td className="px-6 py-4">₹{item.price}</td>
+                                    <td className="px-6 py-4">{item.quantity}</td>
+
                                 </tr>
                             ))
                         ) : (
