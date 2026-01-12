@@ -57,6 +57,7 @@ class CreateSalesProductView(generics.CreateAPIView):
 class ListSalesProductsView(generics.ListAPIView):
     queryset = Sales.objects.all()
     serializer_class = SalesSerializer
+    permission_classes = [AllowAny]
 
 class DeleteSalesProductView(generics.DestroyAPIView):
     queryset = Sales.objects.all()
