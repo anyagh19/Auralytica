@@ -1,23 +1,17 @@
 import { useState, useEffect } from "react";
+import { Save, X } from "lucide-react";
 
-function CreateProductForm({ onSubmit, initialData = null, isUpdate = false, onCancel }) {
+function UpdateSalesForm({ initialData, onSubmit, onCancel, isLoading = false }) {
   const [formData, setFormData] = useState({
-    product_name: "",
-    brand_name: "",
-    category: "ELECTRONICS",
     quantity: "",
     price: "",
   });
 
-  // Pre-fill form if initialData is provided (for update)
   useEffect(() => {
     if (initialData) {
       setFormData({
-        product_name: initialData.product_name || "",
-        brand_name: initialData.brand_name || "",
-        category: initialData.category || "ELECTRONICS",
-        quantity: initialData.quantity || "",
-        price: initialData.price || "",
+        quantity: initialData.quantity,
+        price: initialData.price,
       });
     }
   }, [initialData]);
@@ -29,66 +23,50 @@ function CreateProductForm({ onSubmit, initialData = null, isUpdate = false, onC
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Convert numeric fields
-    const payload = {
-      ...formData,
+    onSubmit({
       quantity: Number(formData.quantity),
       price: Number(formData.price),
-    };
-    onSubmit(payload);
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Product Name */}
+      {/* Read-only fields */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Product Name
         </label>
         <input
           type="text"
-          name="product_name"
-          value={formData.product_name}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          required
+          value={initialData?.product_name || ""}
+          disabled
+          className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
         />
       </div>
-
-      {/* Brand */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Brand Name
         </label>
         <input
           type="text"
-          name="brand_name"
-          value={formData.brand_name}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-          required
+          value={initialData?.brand_name || ""}
+          disabled
+          className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
         />
       </div>
-
-      {/* Category */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Category
         </label>
-        <select
-          name="category"
-          value={formData.category}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition bg-white"
-        >
-          <option value="ELECTRONICS">Electronics</option>
-          <option value="GROCERY">Grocery</option>
-          <option value="CLOTHING">Clothing</option>
-          <option value="OTHER">Other</option>
-        </select>
+        <input
+          type="text"
+          value={initialData?.category || ""}
+          disabled
+          className="w-full px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg cursor-not-allowed"
+        />
       </div>
 
-      {/* Quantity */}
+      {/* Editable fields */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Quantity
@@ -98,13 +76,11 @@ function CreateProductForm({ onSubmit, initialData = null, isUpdate = false, onC
           name="quantity"
           value={formData.quantity}
           onChange={handleChange}
-          min="0"
+          min="1"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
           required
         />
       </div>
-
-      {/* Price */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">
           Price (₹)
@@ -125,16 +101,23 @@ function CreateProductForm({ onSubmit, initialData = null, isUpdate = false, onC
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
-          className="flex-1 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition font-medium"
+          disabled={isLoading}
+          className="flex-1 inline-flex items-center justify-center gap-2 bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isUpdate ? "Update Product" : "Create Product"}
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
+          Update Sales Entry
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition font-medium"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition font-medium"
           >
+            <X className="w-4 h-4" />
             Cancel
           </button>
         )}
@@ -143,4 +126,4 @@ function CreateProductForm({ onSubmit, initialData = null, isUpdate = false, onC
   );
 }
 
-export default CreateProductForm;
+export default UpdateSalesForm;

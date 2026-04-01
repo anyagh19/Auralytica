@@ -1,9 +1,9 @@
 # urls.py
 from django.urls import path
 from .views.prediction import  GetPredictionFromUploadedFile, TrainModel, MakePrediction, GetModelInfo
-from .views.inventory import CreateInventoryProductView , ListInventoryProductsView , DeleteInventoryProductView
-from .views.sales import CreateSalesProductView , ListSalesProductsView , DeleteSalesProductView
-from .views.sales_analizer import ReadSalesDataView , RandomForestView
+from .views.inventory import CreateInventoryProductView , ListInventoryProductsView , DeleteInventoryProductView , UpdateInventoryProductView
+from .views.sales import CreateSalesProductView , ListSalesProductsView , DeleteSalesProductView , UpdateSalesProductView
+from .views.sales_analizer import SalesPredictionView
 
 urlpatterns = [
     # Existing endpoints
@@ -19,8 +19,10 @@ urlpatterns = [
     path('delete-inventory-product/<int:pk>/' , DeleteInventoryProductView.as_view() , name='delete-inventory-product'),
     path('create-sales-product/' , CreateSalesProductView.as_view() , name='create-sales-product'),
     path('list-sales-product/' , ListSalesProductsView.as_view() , name='list-sales-product'),
-    path('delete-sales-product/<int:pk>' , DeleteSalesProductView.as_view(), name='delere-sales-product'),
-    path('read-csv' , ReadSalesDataView.as_view(), name='read-sales-data'),
-    path('random-forest' , RandomForestView.as_view(), name='read-sales-data'),
+    path('delete-sales-product/<int:pk>' , DeleteSalesProductView.as_view(), name='delete-sales-product'),
+    path('inventory/<int:pk>/update/', UpdateInventoryProductView.as_view(), name='inventory-update'),
+    path('update-sales-product/<int:pk>/', UpdateSalesProductView.as_view(), name='update-sales'),
+    path('sales-prediction' , SalesPredictionView.as_view(), name='read-sales-data'),
+    # path('random-forest' , RandomForestView.as_view(), name='random-forest'),
 
 ]

@@ -64,3 +64,7 @@ class DeleteSalesProductView(generics.DestroyAPIView):
     serializer_class = SalesSerializer
     permission_classes = [IsAuthenticated]
 
+class UpdateSalesProductView(generics.UpdateAPIView):
+    queryset = Sales.objects.all()
+    serializer_class = SalesSerializer
+    permission_classes = [IsAuthenticated]

@@ -13,6 +13,7 @@ import Inventory from '../modules/user/components/Inventory'
 import SalesPredictionApp from '../modules/inventory/components/Prediction'
 import InventoryTable from '../modules/inventory/components/InventoryTable'
 import SalesTable from '../modules/sales/components/SalesTable'
+import SalesAnalysis from '../modules/sales/components/SalesAnalysis'
 
 function LogOut() {
   localStorage.clear()
@@ -90,6 +91,15 @@ function App() {
         element={
           <ProtectedRoutes>
             <SalesTable />
+          </ProtectedRoutes>
+
+        }
+      />
+      <Route
+        path='/sales-analysis'
+        element={
+          <ProtectedRoutes>
+            <SalesAnalysis />
           </ProtectedRoutes>
 
         }
