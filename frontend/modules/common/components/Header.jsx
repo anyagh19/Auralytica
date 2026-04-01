@@ -1,78 +1,129 @@
+// Header.js
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { ACCESS_TOKEN } from "../../../src/constants";
+import { Link, useNavigate } from "react-router-dom";
+import { ACCESS_TOKEN, REFRESH_TOKEN } from "../../../src/constants";
+import { Menu, X, LogOut, LogIn } from "lucide-react";
+import { useAuth } from "../../user/hooks/useAuth"; // adjust path
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-const isLoggedIn = !!localStorage.getItem(ACCESS_TOKEN);
-console.log("User logged in:", isLoggedIn);
+  const handleLogout = () => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem(REFRESH_TOKEN);
+    window.dispatchEvent(new CustomEvent('tokenChanged', { detail: { type: 'logout' } }));
+    navigate("/");
+  };
 
-const handleLogout = async () => {
-  localStorage.clear();
-  console.log("User logged out");
-}
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/services", label: "Services" },
+    { to: "/about", label: "About" },
+    { to: "/contact", label: "Contact" },
+  ];
 
   return (
     <header className="bg-white shadow-md fixed top-0 left-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo */}
-        <div className="text-2xl font-bold text-green-600">
-          Aura<span className="text-gray-800">lyst</span>
-        </div>
-        
+        <Link to="/" className="text-2xl font-bold">
+          <span className="text-green-600">Aura</span>
+          <span className="text-gray-800">lyst</span>
+        </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex space-x-8 text-gray-700 font-medium items-center">
-          <Link to={"/"} className="hover:text-blue-600 transition">Home</Link>
-          <Link to={"/services"} className="hover:text-blue-600 transition">Services</Link>
-          <Link to={"/about"} className="hover:text-blue-600 transition">About</Link>
-          <Link to={"/contact"} className="hover:text-blue-600 transition">Contact</Link>
-          {isLoggedIn ? <Link to={"/dashboard"} className="   hover:text-red-600 transition" >Dashboard</Link> : <></>}
-          
-          {isLoggedIn ? <Link to={"/"} className="bg-red-400 text-white px-4 py-2 rounded-lg hover:text-red-600 transition" onClick={handleLogout}>Log Out</Link> : <Link to={"/login"} className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">Login</Link>}
-          
+        <nav className="hidden md:flex items-center space-x-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="text-gray-700 hover:text-green-600 transition font-medium"
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="text-gray-700 hover:text-green-600 transition font-medium"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                <LogOut size={16} />
+                Log Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              <LogIn size={16} />
+              Login
+            </Link>
+          )}
         </nav>
 
-        {/* Mobile Menu Button */}
         <button
-          className="md:hidden flex items-center text-gray-700"
-          onClick={() => setIsOpen(!isOpen)}
+          className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 transition"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {isOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Nav */}
       {isOpen && (
-        <nav className="md:hidden bg-white shadow-md px-6 py-4 space-y-4">
-          <a href="#home" className="block text-gray-700 hover:text-green-600">Home</a>
-          <a href="#about" className="block text-gray-700 hover:text-green-600">About</a>
-          <a href="#services" className="block text-gray-700 hover:text-green-600">Services</a>
-          <a href="#products" className="block text-gray-700 hover:text-green-600">Products</a>
-          <a href="#contact" className="block text-gray-700 hover:text-green-600">Contact</a>
+        <nav className="md:hidden bg-white shadow-md px-6 py-4 space-y-3 border-t border-gray-100">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="block text-gray-700 hover:text-green-600 transition font-medium"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+
+          {isAuthenticated ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="block text-gray-700 hover:text-green-600 transition font-medium"
+                onClick={() => setIsOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsOpen(false);
+                }}
+                className="inline-flex items-center gap-2 w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                <LogOut size={16} />
+                Log Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+              onClick={() => setIsOpen(false)}
+            >
+              <LogIn size={16} />
+              Login
+            </Link>
+          )}
         </nav>
       )}
     </header>

@@ -1,18 +1,60 @@
-import React from "react";
+import React, { useEffect, useRef, useCallback } from "react";
+import ReactDOM from "react-dom";
 
 function Dialog({ isOpen, onClose, title, children }) {
+  const modalRef = useRef(null);
+
+  // Handle escape key
+  const handleKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    },
+    [isOpen, onClose]
+  );
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      window.addEventListener("keydown", handleKeyDown);
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, handleKeyDown]);
+
+  // Focus trap: ensure focus stays inside modal when open
+  useEffect(() => {
+    if (isOpen && modalRef.current) {
+      modalRef.current.focus();
+    }
+  }, [isOpen]);
+
+  // If modal is closed, render nothing
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/40 backdrop-blur-[2px] animate-fadeIn"
         onClick={onClose}
-      ></div>
+        aria-hidden="true"
+      />
 
       {/* Dialog Content */}
       <div
+        ref={modalRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={title ? "dialog-title" : undefined}
         className="
           relative z-50 bg-white rounded-xl shadow-xl 
           w-full max-w-lg 
@@ -20,12 +62,13 @@ function Dialog({ isOpen, onClose, title, children }) {
           p-6 
           animate-scaleIn
           overflow-hidden
+          focus:outline-none
         "
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {title && (
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 id="dialog-title" className="text-xl font-semibold text-gray-900 mb-4">
             {title}
           </h2>
         )}
@@ -51,6 +94,9 @@ function Dialog({ isOpen, onClose, title, children }) {
       </div>
     </div>
   );
+
+  // Use portal to render modal outside of parent DOM hierarchy
+  return ReactDOM.createPortal(modalContent, document.body);
 }
 
 export default Dialog;

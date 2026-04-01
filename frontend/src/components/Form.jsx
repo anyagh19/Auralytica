@@ -1,64 +1,103 @@
-import React, { useState } from 'react'
-import api from '../api'
-import { useNavigate } from 'react-router-dom'
-import { ACCESS_TOKEN , REFRESH_TOKEN } from '../constants'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react';
+import api from '../api';
+import { useNavigate, Link } from 'react-router-dom';
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '../constants';
+import { Loader2 } from 'lucide-react';
 
 function Form({ route, method }) {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [Loading, setLoading] = useState(false)
-    const navigate = useNavigate()
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-    let name = method == "login" ? "login" : "Register"
+  const isLogin = method === 'login';
+  const title = isLogin ? 'Welcome Back' : 'Create Account';
+  const buttonText = isLogin ? 'Sign In' : 'Register';
+  const linkText = isLogin
+    ? "Don't have an account? Register"
+    : 'Already have an account? Login';
+  const linkTo = isLogin ? '/register' : '/login';
 
-    const handleSubmit = async (e) => {
-        setLoading(true)
-        e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        try {
-            const res = await api.post(route , {username , password})
-            if (method === "login") {
-                localStorage.setItem(ACCESS_TOKEN, res.data.access);
-                localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
-                navigate("/dashboard")
-            } else {
-                navigate("/login")
-            }
-        } catch (error) {
-            alert(error)
-        }
-        finally{
-            setLoading(false)
-        }
+    try {
+      const res = await api.post(route, { username, password });
+      // Form.js
+      // Inside handleSubmit after successful login:
+      if (isLogin) {
+        localStorage.setItem(ACCESS_TOKEN, res.data.access);
+        localStorage.setItem(REFRESH_TOKEN, res.data.refresh);
+        window.dispatchEvent(new CustomEvent('tokenChanged', { detail: { type: 'login' } }));
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    } catch (error) {
+      const message = error.response?.data?.detail || error.message || 'An error occurred';
+      alert(message); // Replace with a toast notification if desired
+    } finally {
+      setLoading(false);
     }
-    return (
-        <div className='flex items-center justify-center min-h-screen'>
-            <form onSubmit={handleSubmit} className='form-container flex flex-col gap-5 items-center  py-6 px-4  shadow-xl'>
-                <h1 className='font-bold text-2xl'>{name}</h1>
+  };
 
-                <input
-                    className="form-input px-8 py-3 bg-white rounded-2xl shadow-xl"
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Username"
-                />
-                <input
-                    className="form-input px-8 py-3 bg-white rounded-2xl shadow-xl"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                />
-                {/* {loading && <LoadingIndicator />} */}
-                <button className="form-button px-4 py-2 bg-red-200 rounded-full text-md font-medium" type="submit">
-                    {name}
-                </button>
-                {method === "login" ? <><Link to="/register" className="text-blue-500">Don't have an account? Register</Link></> : <><Link to="/login" className="text-blue-500">Already have an account? Login</Link></>}
-            </form>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-gray-100">
+        <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-6">
+          {title}
+        </h1>
+
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading && <Loader2 className="w-4 h-4 animate-spin" />}
+            {buttonText}
+          </button>
+        </form>
+
+        <div className="text-center mt-6">
+          <Link to={linkTo} className="text-sm text-green-600 hover:text-green-700 transition">
+            {linkText}
+          </Link>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
 
-export default Form
+export default Form;

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from ..serializers import InventorySerializer , CreateInventoryProductSerializer
 from ..models import Inventory
+import logging
 
 class CreateInventoryProductView(generics.CreateAPIView):
     queryset = Inventory.objects.all()
@@ -50,3 +51,26 @@ class DeleteInventoryProductView(generics.DestroyAPIView):
     queryset= Inventory.objects.all()
     serializer_class = InventorySerializer
     permission_classes = [IsAuthenticated]
+
+# ... your existing imports ...
+
+logger = logging.getLogger(__name__)
+
+class UpdateInventoryProductView(generics.UpdateAPIView):
+    queryset = Inventory.objects.all()
+    serializer_class = InventorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        logger.info(f"Update request data: {request.data}")
+        logger.info(f"Updating product ID: {kwargs.get('pk')}")
+
+        partial = kwargs.pop('partial', True)  # allow partial updates
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        logger.info(f"Updated product: {serializer.data}")
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
